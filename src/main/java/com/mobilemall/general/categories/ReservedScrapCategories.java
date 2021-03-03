@@ -1,6 +1,6 @@
-package com.mobilemall.scrapper.categories;
+package com.mobilemall.general.categories;
 
-import com.mobilemall.scrapper.model.Category;
+import com.mobilemall.general.model.Category;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;

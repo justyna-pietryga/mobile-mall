@@ -1,6 +1,6 @@
-package com.mobilemall.scrapper.categories;
+package com.mobilemall.general.categories;
 
-import com.mobilemall.scrapper.model.Category;
+import com.mobilemall.general.model.Category;
 
 import java.io.IOException;
 import java.util.Set;

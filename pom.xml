@@ -9,13 +9,13 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.mobile-mall</groupId>
-    <artifactId>scrapper</artifactId>
+    <artifactId>general</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>scrapper</name>
-    <description>Demo project for Spring Boot</description>
+    <name>Mobile Mall</name>
     <properties>
         <java.version>11</java.version>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>

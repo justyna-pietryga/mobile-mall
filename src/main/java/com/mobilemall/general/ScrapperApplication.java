@@ -1,7 +1,5 @@
-package com.mobilemall.scrapper;
+package com.mobilemall.general;
 
-import com.mobilemall.scrapper.categories.ReservedScrapCategories;
-import com.mobilemall.scrapper.categories.ScrapCategories;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.CommandLineRunner;

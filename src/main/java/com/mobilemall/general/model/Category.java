@@ -1,4 +1,4 @@
-package com.mobilemall.scrapper.model;
+package com.mobilemall.general.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.mobilemall.scrapper;
+package com.mobilemall.general;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

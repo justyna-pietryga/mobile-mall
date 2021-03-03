@@ -1,4 +1,4 @@
-package com.mobilemall.scrapper;
+package com.mobilemall.general;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;

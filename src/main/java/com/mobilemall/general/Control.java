@@ -1,8 +1,8 @@
-package com.mobilemall.scrapper;
+package com.mobilemall.general;
 
-import com.mobilemall.scrapper.categories.ReservedScrapCategories;
-import com.mobilemall.scrapper.categories.ScrapCategories;
-import com.mobilemall.scrapper.model.Category;
+import com.mobilemall.general.categories.ReservedScrapCategories;
+import com.mobilemall.general.categories.ScrapCategories;
+import com.mobilemall.general.model.Category;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
