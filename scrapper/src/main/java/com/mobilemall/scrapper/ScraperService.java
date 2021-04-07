@@ -1,7 +1,7 @@
-package com.mobilemall.general;
+package com.mobilemall.scrapper;
 
-import com.mobilemall.general.categories.ReservedScrapCategories;
-import com.mobilemall.general.categories.ScrapCategories;
+import com.mobilemall.scrapper.categories.ReservedScrapCategories;
+import com.mobilemall.scrapper.categories.ScrapCategories;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
