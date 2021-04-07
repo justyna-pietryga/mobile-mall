@@ -1,6 +1,6 @@
-package com.mobilemall.general.categories;
+package com.mobilemall.scrapper.categories;
 
-import com.mobilemall.general.model.Category;
+import com.mobilemall.scrapper.model.Category;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -15,23 +15,8 @@ import java.util.Set;
 
 @Service
 public class ReservedScrapCategories implements ScrapCategories {
-    @Value("${reserved.url}")
-    private String url;
-    @Value("${reserved.woman.selectortemplate}")
-    private String womanSelectorTemplate;
-    @Value("${reserved.woman.entryNum}")
-    private int entryNodeNum;
-    @Value("${reserved.woman.categories.selector}")
-    private String womanCategoriesSelector;
-    @Value("${reserved.woman.categories.clothes.nodeNum}")
-    private int womanCategoriesClothesNodeNum;
-    @Value("${reserved.woman.categories.clothes.categoryentry.selector}")
-    private String womanCategoriesClothesCategoryEntrySelector;
-
-    @Value("${reserved.woman.categories.clothes.categoryentry.link.selector}")
-    private String categoryEntryLinkSelector;
-    @Value("${reserved.woman.categories.clothes.categoryentry.name.selector}")
-    private String categoryEntryNameSelector;
+//    @Value("${reserved.url}")
+    private String url = "https://www.reserved.com/pl/pl/";
 
     private final WebDriver webDriver;
 
@@ -42,8 +27,6 @@ public class ReservedScrapCategories implements ScrapCategories {
 
     @Override
     public Set<Category> getScrappedCategories() throws IOException {
-//        Document document = Jsoup.connect(url).get();
-        System.out.println("jazda");
         webDriver.get(url);
 
         Set<Category> categorySet = new HashSet<>();
@@ -52,12 +35,15 @@ public class ReservedScrapCategories implements ScrapCategories {
                 .findElement(By.xpath("//*[@id=\"navigation-wrapper\"]/div/ul/li[3]/ul/li[1]/ul"))
                 .findElements(By.tagName("li"));
 
-        WebElement li = clothesCategoriesContainer.get(4).findElement(By.tagName("a"));
+        clothesCategoriesContainer.forEach(categoryEl -> {
+            WebElement categoryLi = categoryEl.findElement(By.tagName("a"));
+            categorySet.add(new Category(categoryLi.getAttribute("innerText"), categoryLi.getAttribute("href")));
+        });
 
-//*[@id="navigation-wrapper"]/div/ul/li[3]/ul/li[1]/ul
-        //#navigation-wrapper > div > ul > li:nth-child(3) > ul > li.sc-cEvuZC.eqaJBs.menu-submenu.type-default.level-1 > ul
-        System.out.println(li.getAttribute("href"));
-        System.out.println(li.getAttribute("innerText"));
+        return categorySet;
+
+
+        //        Document document = Jsoup.connect(url).get();
 //                .findElement(By.xpath("/html/body/div[1]/div/div[3]/div/div[2]/button[2]"));
 //        clothesCategoriesContainer.click();
 
@@ -78,7 +64,5 @@ public class ReservedScrapCategories implements ScrapCategories {
 //            System.out.println(categoryName);
 //            categorySet.add(new Category(categoryName, url));
 //        });
-
-        return categorySet;
     }
 }
