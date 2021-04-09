@@ -1,10 +1,12 @@
 package com.mobilemall.scrapper.categories;
 
 import com.mobilemall.scrapper.model.Category;
+import com.mobilemall.scrapper.model.Product;
 
 import java.io.IOException;
-import java.util.Set;
+import java.util.List;
 
 public interface ScrapCategories {
-     Set<Category> getScrappedCategories() throws IOException;
+     List<Category> getScrappedCategories();
+     List<Product> getProducts(Category category) throws IOException;
 }

@@ -1,6 +1,11 @@
 package com.mobilemall.scrapper.categories;
 
 import com.mobilemall.scrapper.model.Category;
+import com.mobilemall.scrapper.model.Product;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -9,60 +14,65 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 public class ReservedScrapCategories implements ScrapCategories {
-//    @Value("${reserved.url}")
-    private String url = "https://www.reserved.com/pl/pl/";
-
+    private static final String LI_TAG = "li";
     private final WebDriver webDriver;
 
+    @Value("${reserved.url}")
+    private String url;
+    @Value("${reserved.element.li.xpath}")
+    private String liElementXpath;
+
     @Autowired
-    public ReservedScrapCategories(WebDriver webDriver) throws IOException {
+    public ReservedScrapCategories(WebDriver webDriver) {
         this.webDriver = webDriver;
     }
 
     @Override
-    public Set<Category> getScrappedCategories() throws IOException {
+    public List<Category> getScrappedCategories() {
         webDriver.get(url);
 
-        Set<Category> categorySet = new HashSet<>();
-
         List<WebElement> clothesCategoriesContainer = webDriver
-                .findElement(By.xpath("//*[@id=\"navigation-wrapper\"]/div/ul/li[3]/ul/li[1]/ul"))
-                .findElements(By.tagName("li"));
+                .findElement(By.xpath(liElementXpath))
+                .findElements(By.tagName(LI_TAG));
 
-        clothesCategoriesContainer.forEach(categoryEl -> {
-            WebElement categoryLi = categoryEl.findElement(By.tagName("a"));
-            categorySet.add(new Category(categoryLi.getAttribute("innerText"), categoryLi.getAttribute("href")));
-        });
+        return clothesCategoriesContainer.stream()
+                .map(this::getCategory)
+                .collect(toList());
+    }
 
-        return categorySet;
+    @Override
+    public List<Product> getProducts(Category category) throws IOException {
+        Document document = Jsoup.connect(category.getUrl()).get();
+        Elements els = document.select("#categoryProducts article");
+        return els.stream()
+                .map(this::getProduct)
+                .collect(toList());
 
+    }
 
-        //        Document document = Jsoup.connect(url).get();
-//                .findElement(By.xpath("/html/body/div[1]/div/div[3]/div/div[2]/button[2]"));
-//        clothesCategoriesContainer.click();
+    private Category getCategory(WebElement categoryEl) {
+        WebElement categoryLi = categoryEl.findElement(By.tagName("a"));
+        return Category.builder()
+                .name(categoryLi.getAttribute("innerText"))
+                .url(categoryLi.getAttribute("href"))
+                .build();
+    }
 
-//        System.out.println("test: " + clothesCategoriesContainer.toString());
-//
-//        Element clothesCategoriesContainer = document
-//                .select(womanSelectorTemplate)
-//                .get(entryNodeNum)
-//                .select(womanCategoriesSelector)
-//                .get(womanCategoriesClothesNodeNum);
-//
-//        Elements clothesCategories = clothesCategoriesContainer.select(womanCategoriesClothesCategoryEntrySelector);
-//        clothesCategories.forEach(category -> {
-//            String url = category.select(categoryEntryLinkSelector).attr("href");
-//            String categoryName = category.select(categoryEntryNameSelector).text();
-//
-//            System.out.println(url);
-//            System.out.println(categoryName);
-//            categorySet.add(new Category(categoryName, url));
-//        });
+    private Product getProduct(Element element) {
+        Element figureElement = element.select("figure").first();
+        Element productAHrefElement = figureElement.select("figcaption a").first();
+        String imgUrl = figureElement.select("a img").first().attr("data-src");
+
+        return Product.builder()
+                .name(productAHrefElement.text())
+                .url(productAHrefElement.attr("href"))
+                .imgUrl(imgUrl)
+                .build();
     }
 }
