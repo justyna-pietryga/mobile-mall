@@ -19,7 +19,7 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 @Service
-public class ReservedScrapCategories implements ScrapCategories {
+public class ReservedScraper implements Scrapable {
     private static final String LI_TAG = "li";
     private final WebDriver webDriver;
 
@@ -29,7 +29,7 @@ public class ReservedScrapCategories implements ScrapCategories {
     private String liElementXpath;
 
     @Autowired
-    public ReservedScrapCategories(WebDriver webDriver) {
+    public ReservedScraper(WebDriver webDriver) {
         this.webDriver = webDriver;
     }
 

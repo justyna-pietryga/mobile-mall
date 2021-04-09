@@ -1,6 +1,6 @@
 package com.mobilemall.general;
 
-import com.mobilemall.scrapper.categories.ReservedScrapCategories;
+import com.mobilemall.scrapper.categories.ReservedScraper;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.boot.CommandLineRunner;
@@ -19,15 +19,16 @@ public class ScrapperApplication {
     }
 
     @Bean
-    public CommandLineRunner demo(ReservedScrapCategories reservedScrapCategories) {
+    public CommandLineRunner demo(ReservedScraper reservedScraper) {
         return (args) -> {
             log.debug("Scrapping categories");
-            val categories = reservedScrapCategories.getScrappedCategories();
+            val categories = reservedScraper.getScrappedCategories();
 
+            //TODO fix logging
             log.debug("Categories scrapped from reserved: {}", categories.toString());
             System.out.println(categories.toString());
-            log.debug("Products from first category: {}", reservedScrapCategories.getProducts(categories.get(0)));
-            System.out.println(reservedScrapCategories.getProducts(categories.get(0)));
+            log.debug("Products from first category: {}", reservedScraper.getProducts(categories.get(0)));
+            System.out.println(reservedScraper.getProducts(categories.get(0)));
         };
     }
 }
