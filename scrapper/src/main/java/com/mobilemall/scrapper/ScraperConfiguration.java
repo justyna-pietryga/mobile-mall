@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 @Configuration
 @SpringBootApplication
-//@PropertySource("classpath*:scrapper.properties")
+@PropertySource("classpath:scrapper.properties")
 public class ScraperConfiguration {
     @Bean
     public WebDriver webDriver(){

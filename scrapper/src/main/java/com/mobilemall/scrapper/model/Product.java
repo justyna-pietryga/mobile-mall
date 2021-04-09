@@ -4,7 +4,8 @@ import lombok.*;
 
 @Value
 @Builder
-public class Category {
-    String name;
+public class Product {
     String url;
+    String name;
+    String imgUrl;
 }
