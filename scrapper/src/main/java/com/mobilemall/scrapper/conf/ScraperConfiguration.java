@@ -1,10 +1,12 @@
-package com.mobilemall.scrapper;
+package com.mobilemall.scrapper.conf;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 
 import java.util.concurrent.TimeUnit;
 
@@ -12,8 +14,9 @@ import java.util.concurrent.TimeUnit;
 @SpringBootApplication
 @PropertySource("classpath:scrapper.properties")
 public class ScraperConfiguration {
+
     @Bean
-    public WebDriver webDriver(){
+    public WebDriver webDriver() {
         System.setProperty("webdriver.chrome.driver", "scrapper/src/main/resources/chromedriver.exe");
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--diable--notifications");
