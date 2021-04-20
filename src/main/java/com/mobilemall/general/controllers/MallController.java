@@ -1,7 +1,7 @@
 package com.mobilemall.general.controllers;
 
 import com.mobilemall.scrapper.conf.ShopsEnum;
-import com.mobilemall.scrapper.categories.Scrapable;
+import com.mobilemall.scrapper.scrap_classes.Scrapable;
 import com.mobilemall.scrapper.model.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

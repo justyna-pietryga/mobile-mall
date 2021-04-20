@@ -1,7 +1,7 @@
 package com.mobilemall.scrapper.conf;
 
-import com.mobilemall.scrapper.categories.ReservedScraper;
-import com.mobilemall.scrapper.categories.Scrapable;
+import com.mobilemall.scrapper.scrap_classes.ReservedScraper;
+import com.mobilemall.scrapper.scrap_classes.Scrapable;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

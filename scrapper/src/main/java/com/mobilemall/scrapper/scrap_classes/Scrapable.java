@@ -1,4 +1,4 @@
-package com.mobilemall.scrapper.categories;
+package com.mobilemall.scrapper.scrap_classes;
 
 import com.mobilemall.scrapper.model.Category;
 import com.mobilemall.scrapper.model.Product;
