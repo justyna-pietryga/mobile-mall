@@ -28,7 +28,7 @@ public class ScraperConfiguration {
         options.addArguments("--window-size=1580,1280");
 
         WebDriver driver = new ChromeDriver(options);
-//        driver.manage().window().maximize();
+        driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(7, TimeUnit.SECONDS);
 
         return driver;

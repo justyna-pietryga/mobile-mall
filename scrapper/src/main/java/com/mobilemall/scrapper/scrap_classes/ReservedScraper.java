@@ -9,7 +9,6 @@ import org.jsoup.select.Elements;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -19,25 +18,22 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 @Service
-public class ReservedScraper implements Scrapable {
-    private static final String LI_TAG = "li";
-    private final WebDriver webDriver;
+public class ReservedScraper extends Scraper implements Scrapable {
 
     @Value("${reserved.url}")
     private String url;
     @Value("${reserved.element.li.xpath}")
     private String liElementXpath;
 
-    @Autowired
-    public ReservedScraper(WebDriver webDriver) {
-        this.webDriver = webDriver;
+    protected ReservedScraper(WebDriver webDriver) {
+        super(webDriver);
     }
 
     @Override
     public List<Category> getScrappedCategories() {
-        webDriver.get(url);
+        getWebDriver().get(url);
 
-        List<WebElement> clothesCategoriesContainer = webDriver
+        List<WebElement> clothesCategoriesContainer = getWebDriver()
                 .findElement(By.xpath(liElementXpath))
                 .findElements(By.tagName(LI_TAG));
 

@@ -1,7 +1,8 @@
 package com.mobilemall.scrapper.conf;
 
 public enum ShopsEnum {
-    RESERVED("reserved");
+    RESERVED("reserved"),
+    BERSHKA("bershka");
 
     String name;
 

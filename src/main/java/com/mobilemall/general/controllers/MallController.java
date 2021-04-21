@@ -31,4 +31,8 @@ public class MallController {
         return shopList.stream()
                 .collect(Collectors.toMap(identity(), shop -> scrapperHandler.get(shop).getScrappedCategories()));
     }
+
+    //TODO handle the situation when scrapping from one shop would fail
+    //TODO Introduce React Java or sth else
+    //TODO Consider removing WebDriver as a bean and create seperate instance for every run and make calls in parallel
 }
