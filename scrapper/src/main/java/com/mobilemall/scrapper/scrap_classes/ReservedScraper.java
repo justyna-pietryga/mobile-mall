@@ -1,5 +1,6 @@
 package com.mobilemall.scrapper.scrap_classes;
 
+import com.mobilemall.scrapper.conf.SeleniumManager;
 import com.mobilemall.scrapper.model.Category;
 import com.mobilemall.scrapper.model.Product;
 import org.jsoup.Jsoup;
@@ -31,13 +32,14 @@ public class ReservedScraper extends Scraper implements Scrapable {
 
     @Override
     public List<Category> getScrappedCategories() {
-        getWebDriver().get(url);
+        return SeleniumManager.scrapData(this::scrapCategories, url);
+    }
 
-        List<WebElement> clothesCategoriesContainer = getWebDriver()
+    private List<Category> scrapCategories(WebDriver driver) {
+        return driver
                 .findElement(By.xpath(liElementXpath))
-                .findElements(By.tagName(LI_TAG));
-
-        return clothesCategoriesContainer.stream()
+                .findElements(By.tagName(LI_TAG))
+                .stream()
                 .map(this::getCategory)
                 .collect(toList());
     }
@@ -49,7 +51,6 @@ public class ReservedScraper extends Scraper implements Scrapable {
         return els.stream()
                 .map(this::getProduct)
                 .collect(toList());
-
     }
 
     private Category getCategory(WebElement categoryEl) {
