@@ -1,5 +1,6 @@
 package com.mobilemall.scrapper.scrap_classes;
 
+import com.mobilemall.scrapper.conf.SeleniumManager;
 import com.mobilemall.scrapper.model.Category;
 import com.mobilemall.scrapper.model.Product;
 import org.openqa.selenium.By;
@@ -27,13 +28,14 @@ public class BershkaScraper extends Scraper implements Scrapable {
 
     @Override
     public List<Category> getScrappedCategories() {
-        getWebDriver().get(url + "/pl/");
+        return SeleniumManager.scrapData(this::scrapCategories, url + "/pl/");
+    }
 
-        List<WebElement> clothesCategoriesContainer = getWebDriver()
+    private List<Category> scrapCategories(WebDriver driver) {
+        return driver
                 .findElement(By.xpath(liElementXpath))
-                .findElements(By.tagName(LI_TAG));
-
-        return clothesCategoriesContainer.stream()
+                .findElements(By.tagName(LI_TAG))
+                .stream()
                 .map(this::getOptionalAtagCategoryElement)
                 .filter(Optional::isPresent)
                 .map(this::getCategory)
