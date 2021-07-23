@@ -21,6 +21,8 @@ public class BershkaScraper extends Scraper implements Scrapable {
     private String url;
     @Value("${bershka.element.li.xpath}")
     private String liElementXpath;
+    @Value("${bershka.product.ul.path}")
+    private String productUlPath;
 
     protected BershkaScraper(WebDriver webDriver) {
         super(webDriver);
@@ -44,7 +46,46 @@ public class BershkaScraper extends Scraper implements Scrapable {
 
     @Override
     public List<Product> getProducts(Category category) throws IOException {
-        return null;
+        return SeleniumManager.scrapData(this::scrapProducts, category.getUrl());
+    }
+
+
+    private List<Product> scrapProducts(WebDriver webDriver) {
+        return webDriver
+                .findElement(By.xpath(productUlPath))
+                .findElements(By.tagName(LI_TAG))
+                .stream()
+                .map(this::getProduct)
+                .filter(product -> product.getUrl() != null)
+                .collect(toList());
+    }
+
+    private Product getProduct(WebElement webElement) {
+        if (getOptionalTagProductElement(webElement, "div").isPresent()) {
+            WebElement productDivHref = webElement.findElement(By.tagName("div"));
+            if (getOptionalTagProductElement(productDivHref, "a").isPresent()) {
+                WebElement productAHref = productDivHref.findElement(By.tagName("a"));
+                WebElement pElement = productAHref
+                        .findElement(By.className("product-content"))
+                        .findElement(By.tagName("div"))
+                        .findElement(By.className("product-text"))
+                        .findElement(By.tagName("p"));
+                WebElement imgElement = productAHref
+                        .findElement(By.className("product-image"))
+                        .findElement(By.className("product-image-wrapper"))
+                        .findElement(By.className("image-item-wrapper"))
+                        .findElement(By.className("image-item"));
+//                System.out.println("papa2: " + imgElement.getAttribute("data-original"));
+//                System.out.println("a a " + productAHref.getAttribute("class"));
+//                System.out.println("lala " + productAHref.getAttribute("href"));
+                return Product.builder()
+                        .url(productAHref.getAttribute("href"))
+                        .name(pElement.getText())
+                        .imgUrl(imgElement.getAttribute("data-original"))
+                        .build();
+            }
+        }
+        return Product.builder().build();
     }
 
     private Category getCategory(Optional<?> categoryA) {
@@ -60,6 +101,15 @@ public class BershkaScraper extends Scraper implements Scrapable {
             return Optional.of(categoryEl.findElement(By.tagName("a")));
         } catch (org.openqa.selenium.NoSuchElementException exception) {
             System.out.println("No category in this element: " + exception); //TODO make slf4j work and put log here
+            return Optional.empty();
+        }
+    }
+
+    private Optional<?> getOptionalTagProductElement(WebElement categoryEl, String tag) {
+        try {
+            return Optional.of(categoryEl.findElement(By.tagName(tag)));
+        } catch (org.openqa.selenium.NoSuchElementException exception) {
+            System.out.println("No product in this element: " + exception); //TODO make slf4j work and put log here
             return Optional.empty();
         }
     }
