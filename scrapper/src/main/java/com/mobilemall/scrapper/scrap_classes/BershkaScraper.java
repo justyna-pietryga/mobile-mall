@@ -1,15 +1,18 @@
 package com.mobilemall.scrapper.scrap_classes;
 
 import com.mobilemall.scrapper.conf.SeleniumManager;
+import com.mobilemall.scrapper.conf.ShopsEnum;
 import com.mobilemall.scrapper.model.Category;
 import com.mobilemall.scrapper.model.Product;
+import lombok.val;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.scheduler.Schedulers;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +32,11 @@ public class BershkaScraper extends Scraper implements Scrapable {
     }
 
     @Override
+    public ShopsEnum getShop() {
+        return ShopsEnum.BERSHKA;
+    }
+
+    @Override
     public List<Category> getScrappedCategories() {
         return SeleniumManager.scrapData(this::scrapCategories, url + "/pl/");
     }
@@ -45,43 +53,55 @@ public class BershkaScraper extends Scraper implements Scrapable {
     }
 
     @Override
-    public List<Product> getProducts(Category category) throws IOException {
+    public Flux<Product> getProducts(Category category) {
         return SeleniumManager.scrapData(this::scrapProducts, category.getUrl());
     }
 
 
-    private List<Product> scrapProducts(WebDriver webDriver) {
-        return webDriver
+    private Flux<Product> scrapProducts(WebDriver webDriver) {
+        val webElements = webDriver
                 .findElement(By.xpath(productUlPath))
-                .findElements(By.tagName(LI_TAG))
-                .stream()
+                .findElements(By.tagName(LI_TAG));
+
+        return Flux.fromIterable(webElements)
+                .doOnNext(el -> System.out.println("First element tag should be li: " + el.getTagName()))
+                .subscribeOn(Schedulers.boundedElastic())
                 .map(this::getProduct)
+                .doOnNext(el -> System.out.println("Mapped to product: " + el.getName()))
                 .filter(product -> product.getUrl() != null)
-                .collect(toList());
+                .doOnNext(el -> System.out.println("Filtered"))
+                .doOnComplete(() -> System.out.println("completed"));
     }
 
     private Product getProduct(WebElement webElement) {
         if (getOptionalTagProductElement(webElement, "div").isPresent()) {
+            System.out.println("getOptional div");
             WebElement productDivHref = webElement.findElement(By.tagName("div"));
             if (getOptionalTagProductElement(productDivHref, "a").isPresent()) {
                 WebElement productAHref = productDivHref.findElement(By.tagName("a"));
+                System.out.println("getOptional a");
                 WebElement pElement = productAHref
                         .findElement(By.className("product-content"))
                         .findElement(By.tagName("div"))
                         .findElement(By.className("product-text"))
                         .findElement(By.tagName("p"));
-                WebElement imgElement = productAHref
-                        .findElement(By.className("product-image"))
-                        .findElement(By.className("product-image-wrapper"))
-                        .findElement(By.className("image-item-wrapper"))
-                        .findElement(By.className("image-item"));
-//                System.out.println("papa2: " + imgElement.getAttribute("data-original"));
-//                System.out.println("a a " + productAHref.getAttribute("class"));
-//                System.out.println("lala " + productAHref.getAttribute("href"));
+
+                Optional<WebElement> imgElement = Optional.empty();
+                val imgEl1 = getOptionalClassProductElement(productAHref, "product-image");
+                if (imgEl1.isPresent()) {
+                    val imgEl2 = getOptionalClassProductElement(imgEl1.get(), "product-image-wrapper");
+                    if (imgEl2.isPresent()) {
+                        val imgEl3 = getOptionalClassProductElement(imgEl2.get(), "image-item-wrapper");
+                        if (imgEl3.isPresent()) {
+                            imgElement = getOptionalClassProductElement(imgEl3.get(), "image-item");
+                        }
+                    }
+                }
+
                 return Product.builder()
                         .url(productAHref.getAttribute("href"))
                         .name(pElement.getText())
-                        .imgUrl(imgElement.getAttribute("data-original"))
+                        .imgUrl(imgElement.isPresent() ? imgElement.get().getAttribute("data-original") : "")
                         .build();
             }
         }
@@ -93,10 +113,11 @@ public class BershkaScraper extends Scraper implements Scrapable {
         return Category.builder()
                 .name(category.findElement(By.tagName("span")).getAttribute("innerHTML"))
                 .url(category.getAttribute("href"))
+                .shop(getShop())
                 .build();
     }
 
-    private Optional<?> getOptionalAtagCategoryElement(WebElement categoryEl) {
+    private Optional<WebElement> getOptionalAtagCategoryElement(WebElement categoryEl) {
         try {
             return Optional.of(categoryEl.findElement(By.tagName("a")));
         } catch (org.openqa.selenium.NoSuchElementException exception) {
@@ -105,12 +126,30 @@ public class BershkaScraper extends Scraper implements Scrapable {
         }
     }
 
-    private Optional<?> getOptionalTagProductElement(WebElement categoryEl, String tag) {
+    private Optional<WebElement> getOptionalTagProductElement(WebElement categoryEl, String tag) {
         try {
             return Optional.of(categoryEl.findElement(By.tagName(tag)));
         } catch (org.openqa.selenium.NoSuchElementException exception) {
             System.out.println("No product in this element: " + exception); //TODO make slf4j work and put log here
             return Optional.empty();
+        }
+    }
+
+    private Optional<WebElement> getOptionalClassProductElement(WebElement categoryEl, String className) {
+        try {
+            return Optional.of(categoryEl.findElement(By.className(className)));
+        } catch (org.openqa.selenium.NoSuchElementException exception) {
+            System.out.println("No product in this element: " + exception); //TODO make slf4j work and put log here
+            return Optional.empty();
+        }
+    }
+
+    private WebElement getByXPath(WebElement webElement, String xpath) {
+        try {
+            return webElement.findElement(By.xpath(xpath));
+        } catch (org.openqa.selenium.NoSuchElementException exception) {
+            System.out.println("No product p in this element: " + exception); //TODO make slf4j work and put log here
+            return null;
         }
     }
 }
