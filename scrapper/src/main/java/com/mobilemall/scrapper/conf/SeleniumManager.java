@@ -1,22 +1,20 @@
 package com.mobilemall.scrapper.conf;
 
-import lombok.val;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import reactor.core.publisher.Flux;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 public class SeleniumManager {
 
-    public static <T> T scrapData(Function<WebDriver, T> scrapConsumer, String url){
+    public static <T> Flux<T> scrapData(Function<WebDriver, Flux<T>> scrapConsumer, String url) {
         WebDriver driver = createWebDriver();
         driver.get(url);
-        val result = scrapConsumer.apply(driver);
-//        driver.quit();
-        return result;
+        return scrapConsumer.apply(driver)
+                .doOnTerminate(driver::quit);
     }
 
     public static WebDriver createWebDriver() {
