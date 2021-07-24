@@ -13,10 +13,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
 
-import java.util.List;
 import java.util.Optional;
-
-import static java.util.stream.Collectors.toList;
 
 @Service
 public class BershkaScraper extends Scraper implements Scrapable {
@@ -37,19 +34,19 @@ public class BershkaScraper extends Scraper implements Scrapable {
     }
 
     @Override
-    public List<Category> getScrappedCategories() {
+    public Flux<Category> getScrappedCategories() {
         return SeleniumManager.scrapData(this::scrapCategories, url + "/pl/");
     }
 
-    private List<Category> scrapCategories(WebDriver driver) {
-        return driver
+    private Flux<Category> scrapCategories(WebDriver driver) {
+        val elements = driver
                 .findElement(By.xpath(liElementXpath))
-                .findElements(By.tagName(LI_TAG))
-                .stream()
+                .findElements(By.tagName(LI_TAG));
+
+        return Flux.fromIterable(elements)
                 .map(this::getOptionalAtagCategoryElement)
                 .filter(Optional::isPresent)
-                .map(this::getCategory)
-                .collect(toList());
+                .map(this::getCategory);
     }
 
     @Override

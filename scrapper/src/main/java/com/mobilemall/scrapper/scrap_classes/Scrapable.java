@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface Scrapable {
-     List<Category> getScrappedCategories();
+     Flux<Category> getScrappedCategories();
      Flux<Product> getProducts(Category category);
      ShopsEnum getShop();
 }
