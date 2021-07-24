@@ -1,6 +1,7 @@
 package com.mobilemall.scrapper.scrap_classes;
 
 import com.mobilemall.scrapper.conf.SeleniumManager;
+import com.mobilemall.scrapper.conf.ShopsEnum;
 import com.mobilemall.scrapper.model.Category;
 import com.mobilemall.scrapper.model.Product;
 import org.jsoup.Jsoup;
@@ -12,6 +13,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.ParallelFlux;
 
 import java.io.IOException;
 import java.util.List;
@@ -35,6 +38,11 @@ public class ReservedScraper extends Scraper implements Scrapable {
         return SeleniumManager.scrapData(this::scrapCategories, url);
     }
 
+    @Override
+    public ShopsEnum getShop() {
+        return ShopsEnum.RESERVED;
+    }
+
     private List<Category> scrapCategories(WebDriver driver) {
         return driver
                 .findElement(By.xpath(liElementXpath))
@@ -44,13 +52,19 @@ public class ReservedScraper extends Scraper implements Scrapable {
                 .collect(toList());
     }
 
-    @Override
-    public List<Product> getProducts(Category category) throws IOException {
-        Document document = Jsoup.connect(category.getUrl()).get();
+
+//    @Override
+    public Flux<Product> getProducts(Category category){
+        Document document = null;
+        try {
+            document = Jsoup.connect(category.getUrl()).get();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         Elements els = document.select("#categoryProducts article");
-        return els.stream()
+        return Flux.fromIterable(els.stream()
                 .map(this::getProduct)
-                .collect(toList());
+                .collect(toList()));
     }
 
     private Category getCategory(WebElement categoryEl) {
@@ -58,6 +72,7 @@ public class ReservedScraper extends Scraper implements Scrapable {
         return Category.builder()
                 .name(categoryLi.getAttribute("innerText"))
                 .url(categoryLi.getAttribute("href"))
+                .shop(getShop())
                 .build();
     }
 

@@ -11,11 +11,11 @@ import java.util.function.Function;
 
 public class SeleniumManager {
 
-    public static <T> List<T> scrapData(Function<WebDriver, List<T>> scrapConsumer, String url){
+    public static <T> T scrapData(Function<WebDriver, T> scrapConsumer, String url){
         WebDriver driver = createWebDriver();
         driver.get(url);
         val result = scrapConsumer.apply(driver);
-        driver.quit();
+//        driver.quit();
         return result;
     }
 
@@ -29,7 +29,7 @@ public class SeleniumManager {
 
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--diable--notifications");
-        options.addArguments("--headless");
+//        options.addArguments("--headless");
         options.addArguments("--disable-gpu");
         options.addArguments("--disable-extensions");
         options.addArguments("--no-sandbox");
