@@ -53,8 +53,8 @@ public class ReservedScraper extends Scraper implements Scrapable {
     }
 
 
-//    @Override
-    public Flux<Product> getProducts(Category category){
+    @Override
+    public Flux<Product> getProducts(Category category) {
         Document document = null;
         try {
             document = Jsoup.connect(category.getUrl()).get();
@@ -62,9 +62,9 @@ public class ReservedScraper extends Scraper implements Scrapable {
             e.printStackTrace();
         }
         Elements els = document.select("#categoryProducts article");
-        return Flux.fromIterable(els.stream()
-                .map(this::getProduct)
-                .collect(toList()));
+
+        return Flux.fromIterable(els)
+                .map(this::getProduct);
     }
 
     private Category getCategory(WebElement categoryEl) {
