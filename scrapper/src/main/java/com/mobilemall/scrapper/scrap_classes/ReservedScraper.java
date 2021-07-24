@@ -4,6 +4,7 @@ import com.mobilemall.scrapper.conf.SeleniumManager;
 import com.mobilemall.scrapper.conf.ShopsEnum;
 import com.mobilemall.scrapper.model.Category;
 import com.mobilemall.scrapper.model.Product;
+import lombok.val;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -34,7 +35,7 @@ public class ReservedScraper extends Scraper implements Scrapable {
     }
 
     @Override
-    public List<Category> getScrappedCategories() {
+    public Flux<Category> getScrappedCategories() {
         return SeleniumManager.scrapData(this::scrapCategories, url);
     }
 
@@ -43,15 +44,14 @@ public class ReservedScraper extends Scraper implements Scrapable {
         return ShopsEnum.RESERVED;
     }
 
-    private List<Category> scrapCategories(WebDriver driver) {
-        return driver
+    private Flux<Category> scrapCategories(WebDriver driver) {
+        val elements = driver
                 .findElement(By.xpath(liElementXpath))
-                .findElements(By.tagName(LI_TAG))
-                .stream()
-                .map(this::getCategory)
-                .collect(toList());
-    }
+                .findElements(By.tagName(LI_TAG));
 
+        return Flux.fromIterable(elements)
+                .map(this::getCategory);
+    }
 
     @Override
     public Flux<Product> getProducts(Category category) {

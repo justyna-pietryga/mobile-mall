@@ -1,5 +1,6 @@
 package com.mobilemall.scrapper.model;
 
+import com.mobilemall.scrapper.conf.ShopsEnum;
 import lombok.*;
 
 @Value
@@ -7,4 +8,5 @@ import lombok.*;
 public class Category {
     String name;
     String url;
+    ShopsEnum shop;
 }
