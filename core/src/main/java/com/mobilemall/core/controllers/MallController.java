@@ -38,9 +38,6 @@ public class MallController {
     @GetMapping(path = "/categories", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public Flux<Category> getCategories(@RequestParam Set<ShopsEnum> shopList) {
-        shopList.parallelStream()
-                .forEach(shop -> shopRepository.save(new Shop(shop.name())));
-
         return Flux.fromIterable(shopList)
                 .subscribeOn(Schedulers.boundedElastic())
                 .flatMap(shop -> scrapperHandler.get(shop)
@@ -75,6 +72,15 @@ public class MallController {
             array.add(String.valueOf(i));
         }
         return Flux.fromIterable(array);
+    }
+
+    @GetMapping(path = "/defaults")
+    @ResponseStatus(code = HttpStatus.OK)
+    public void setDefaults() {
+        List.of(ShopsEnum.values())
+                .stream()
+                .map(shopEnum -> new Shop(shopEnum.name()))
+                .forEach(shopRepository::save);
     }
 
     //TODO handle the situation when scrapping from one shop would fail
