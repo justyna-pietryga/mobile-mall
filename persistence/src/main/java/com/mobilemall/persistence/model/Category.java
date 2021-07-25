@@ -17,11 +17,17 @@ public class Category {
     private String originalName;
 
     @ManyToOne
-    @JoinColumn(name="standardCategory_id", nullable=false)
+    @JoinColumn(name="standardCategory_id")
     private StandardCategory standardCategory;
 
     private String url;
     @ManyToOne
     @JoinColumn(name = "shop_id", nullable = false)
     private Shop shop;
+
+    public Category(String originalName, String url, Shop shop) {
+        this.originalName = originalName;
+        this.url = url;
+        this.shop = shop;
+    }
 }

@@ -13,15 +13,12 @@ import java.util.List;
 @AllArgsConstructor
 public class Shop {
 
-    public Shop(String name, List<Category> categories) {
-        this.name = name;
-        this.categories = categories;
+    public Shop(String name) {
+        this.shop_id = name;
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long shop_id;
-    private String name;
+    private String shop_id;
 
     @OneToMany(mappedBy = "shop")
     private List<Category> categories;
