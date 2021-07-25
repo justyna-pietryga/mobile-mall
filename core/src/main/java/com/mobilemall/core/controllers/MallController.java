@@ -1,6 +1,7 @@
 package com.mobilemall.core.controllers;
 
 import com.mobilemall.persistence.model.Shop;
+import com.mobilemall.persistence.repository.CategoryRepository;
 import com.mobilemall.persistence.repository.ShopRepository;
 import com.mobilemall.scrapper.conf.ShopsEnum;
 import com.mobilemall.scrapper.model.Category;
@@ -25,21 +26,33 @@ public class MallController {
 
     private final Map<ShopsEnum, Scrapable> scrapperHandler;
     private final ShopRepository shopRepository;
+    private final CategoryRepository categoryRepository;
 
     @Autowired
-    public MallController(Map<ShopsEnum, Scrapable> scrapperHandler, ShopRepository shopRepository) {
+    public MallController(Map<ShopsEnum, Scrapable> scrapperHandler, ShopRepository shopRepository, CategoryRepository categoryRepository) {
         this.scrapperHandler = scrapperHandler;
         this.shopRepository = shopRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     @GetMapping(path = "/categories", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public Flux<Category> getCategories(@RequestParam Set<ShopsEnum> shopList) {
-        shopRepository.save(new Shop("BERSHKA", List.of()));
+        shopList.parallelStream()
+                .forEach(shop -> shopRepository.save(new Shop(shop.name())));
+
         return Flux.fromIterable(shopList)
                 .subscribeOn(Schedulers.boundedElastic())
                 .flatMap(shop -> scrapperHandler.get(shop)
                         .getScrappedCategories()
+                        .doOnNext(category -> {
+                            val categoryToPersist =
+                                    new com.mobilemall.persistence.model.Category(
+                                            category.getName(),
+                                            category.getUrl(),
+                                            shopRepository.findById(category.getShop().name()).get());
+                            categoryRepository.save(categoryToPersist);
+                        })
                         .subscribeOn(Schedulers.boundedElastic()));
     }
 
