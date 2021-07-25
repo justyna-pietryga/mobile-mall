@@ -1,11 +1,9 @@
 package com.mobilemall.persistence.model;
 
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Data
@@ -16,7 +14,7 @@ public class Category {
     private Long category_id;
     private String originalName;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="standardCategory_id")
     private StandardCategory standardCategory;
 

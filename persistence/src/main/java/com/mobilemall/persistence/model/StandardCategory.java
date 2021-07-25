@@ -4,10 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.Set;
 
 @Entity
@@ -19,6 +16,11 @@ public class StandardCategory {
     private Long standardCategory_id;
     private String name;
 
+    @Transient
     @OneToMany(mappedBy="standardCategory")
     private Set<Category> categories;
+
+    public StandardCategory(String name) {
+        this.name = name;
+    }
 }
