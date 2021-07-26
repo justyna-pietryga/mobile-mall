@@ -11,6 +11,6 @@ import java.util.List;
 
 public interface Scrapable {
      Flux<Category> getScrappedCategories();
-     Flux<Product> getProducts(Category category);
+     Flux<Product> getProducts(String url);
      ShopsEnum getShop();
 }
