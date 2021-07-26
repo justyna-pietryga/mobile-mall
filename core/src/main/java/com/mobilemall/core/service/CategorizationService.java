@@ -1,4 +1,4 @@
-package com.mobilemall.core.controllers;
+package com.mobilemall.core.service;
 
 import com.mobilemall.persistence.model.Category;
 import com.mobilemall.persistence.model.StandardCategory;

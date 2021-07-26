@@ -1,5 +1,6 @@
 package com.mobilemall.core.controllers;
 
+import com.mobilemall.core.service.CategorizationService;
 import com.mobilemall.persistence.model.StandardCategory;
 import com.mobilemall.scrapper.conf.ShopsEnum;
 import com.mobilemall.scrapper.model.Category;
