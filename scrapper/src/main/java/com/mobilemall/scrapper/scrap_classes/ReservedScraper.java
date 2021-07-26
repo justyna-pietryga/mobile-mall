@@ -54,10 +54,10 @@ public class ReservedScraper extends Scraper implements Scrapable {
     }
 
     @Override
-    public Flux<Product> getProducts(Category category) {
+    public Flux<Product> getProducts(String url) {
         Document document = null;
         try {
-            document = Jsoup.connect(category.getUrl()).get();
+            document = Jsoup.connect(url).get();
         } catch (IOException e) {
             e.printStackTrace();
         }

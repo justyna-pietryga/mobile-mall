@@ -50,8 +50,8 @@ public class BershkaScraper extends Scraper implements Scrapable {
     }
 
     @Override
-    public Flux<Product> getProducts(Category category) {
-        return SeleniumManager.scrapData(this::scrapProducts, category.getUrl());
+    public Flux<Product> getProducts(String url) {
+        return SeleniumManager.scrapData(this::scrapProducts, url);
     }
 
 
