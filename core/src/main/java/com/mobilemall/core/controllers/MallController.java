@@ -53,15 +53,13 @@ public class MallController {
                         .subscribeOn(Schedulers.boundedElastic()));
     }
 
-    @GetMapping(path = "/products", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(path = "/prod", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public Flux<Product> getProducts() {
         return scrapperHandler
                 .get(ShopsEnum.RESERVED)
-                .getProducts(Category.builder()
-                        .url("https://www.reserved.com/pl/pl/woman/clothes/blouses")
+                .getProducts("https://www.reserved.com/pl/pl/woman/clothes/blouses");
 //                        .url("https://www.bershka.com/pl/kobieta/odzie%C5%BC/bluzy-c1010193222.html")
-                        .build());
     }
 
     @GetMapping(path = "/test", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
