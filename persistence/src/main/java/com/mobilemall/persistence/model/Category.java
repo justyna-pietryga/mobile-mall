@@ -12,7 +12,7 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long category_id;
-    private String originalName;
+    private String name;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="standardCategory_id")
@@ -23,8 +23,8 @@ public class Category {
     @JoinColumn(name = "shop_id", nullable = false)
     private Shop shop;
 
-    public Category(String originalName, String url, Shop shop) {
-        this.originalName = originalName;
+    public Category(String name, String url, Shop shop) {
+        this.name = name;
         this.url = url;
         this.shop = shop;
     }

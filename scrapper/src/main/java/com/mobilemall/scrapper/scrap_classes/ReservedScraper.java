@@ -79,12 +79,14 @@ public class ReservedScraper extends Scraper implements Scrapable {
     private Product getProduct(Element element) {
         Element figureElement = element.select("figure").first();
         Element productAHrefElement = figureElement.select("figcaption a").first();
+        Element priceElement = figureElement.select("section p span").first();
         String imgUrl = figureElement.select("a img").first().attr("data-src");
 
         return Product.builder()
                 .name(productAHrefElement.text())
                 .url(productAHrefElement.attr("href"))
                 .imgUrl(imgUrl)
+                .price(priceElement.text())
                 .build();
     }
 }

@@ -8,6 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CategoryRepository extends CrudRepository<Category, Long> {
-    Optional<Category> findCategoryByOriginalNameAndUrl(String originalName, String url);
+    Optional<Category> findCategoryByNameAndUrl(String originalName, String url);
     List<Category> findCategoriesByStandardCategory(StandardCategory standardCategory);
 }

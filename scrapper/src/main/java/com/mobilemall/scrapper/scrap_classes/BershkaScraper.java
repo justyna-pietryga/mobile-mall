@@ -77,11 +77,19 @@ public class BershkaScraper extends Scraper implements Scrapable {
             if (getOptionalTagProductElement(productDivHref, "a").isPresent()) {
                 WebElement productAHref = productDivHref.findElement(By.tagName("a"));
                 System.out.println("getOptional a");
-                WebElement pElement = productAHref
+                WebElement textPriceDiv = productAHref
                         .findElement(By.className("product-content"))
-                        .findElement(By.tagName("div"))
+                        .findElement(By.tagName("div"));
+                WebElement pElement = textPriceDiv
                         .findElement(By.className("product-text"))
                         .findElement(By.tagName("p"));
+
+                WebElement priceElement = textPriceDiv
+                        .findElement(By.className("top-block"))
+                        .findElement(By.tagName("div"))
+                        .findElement(By.className("price-elem"))
+                        .findElement(By.className("current-price-elem"));
+
 
                 Optional<WebElement> imgElement = Optional.empty();
                 val imgEl1 = getOptionalClassProductElement(productAHref, "product-image");
@@ -99,6 +107,7 @@ public class BershkaScraper extends Scraper implements Scrapable {
                         .url(productAHref.getAttribute("href"))
                         .name(pElement.getText())
                         .imgUrl(imgElement.isPresent() ? imgElement.get().getAttribute("data-original") : "")
+                        .price(priceElement.getText())
                         .build();
             }
         }
