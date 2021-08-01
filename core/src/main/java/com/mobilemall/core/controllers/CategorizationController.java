@@ -15,6 +15,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping(path = "/api/categorisation")
+@CrossOrigin(origins = "*")
 @Slf4j
 public class CategorizationController {
 
@@ -58,8 +59,9 @@ public class CategorizationController {
         return categorizationService.findCategoriesByStandardCategoryIds(standardCategoryIds);
     }
 
-    @PostMapping(path = "/save-categories")
+    @RequestMapping(value = "/save-categories", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
+    @CrossOrigin(origins = "http://localhost:3000")
     public void saveCategoryWithStandardization(@RequestBody List<com.mobilemall.persistence.model.Category> categories) {
         categorizationService.saveCategoryWithStandardization(categories);
     }

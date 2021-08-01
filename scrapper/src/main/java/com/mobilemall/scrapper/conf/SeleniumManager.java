@@ -13,8 +13,19 @@ public class SeleniumManager {
     public static <T> Flux<T> scrapData(Function<WebDriver, Flux<T>> scrapConsumer, String url) {
         WebDriver driver = createWebDriver();
         driver.get(url);
+        synchronized (driver) {
+            webDriverDelayAtStart(driver);
+        }
         return scrapConsumer.apply(driver)
                 .doOnTerminate(driver::quit);
+    }
+
+    private static void webDriverDelayAtStart(WebDriver driver) {
+        try {
+            driver.wait(10 * 1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public static WebDriver createWebDriver() {
@@ -37,8 +48,8 @@ public class SeleniumManager {
 //        options.setCapability("proxy", proxy);
 
         WebDriver driver = new ChromeDriver(options);
-        driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(7, TimeUnit.SECONDS);
+//        driver.manage().window().maximize();
+        driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);
 
         return driver;
     }

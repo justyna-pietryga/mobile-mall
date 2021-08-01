@@ -66,9 +66,9 @@ public class CategorizationService {
 
     public Flux<com.mobilemall.scrapper.model.Category> extractCategories(Set<ShopsEnum> shopList, boolean extractOnlyNotPersisted) {
         return Flux.fromIterable(shopList)
-                .subscribeOn(Schedulers.boundedElastic())
+                .subscribeOn(Schedulers.parallel())
                 .flatMap(shop -> scrapperHandler.get(shop).getScrappedCategories()
-                        .subscribeOn(Schedulers.boundedElastic())
+                        .subscribeOn(Schedulers.parallel())
                         .filter(category -> !extractOnlyNotPersisted || isCategoryNotPersisted(category)));
     }
 
@@ -79,7 +79,9 @@ public class CategorizationService {
 
     private com.mobilemall.persistence.model.Category saveStandardCategory(
             com.mobilemall.persistence.model.Category category) {
-        var standard = category.getStandardCategory();
+        var standardFromRequest = category.getStandardCategory();
+        var standard = !standardFromRequest.getName().equals("") ?
+                standardFromRequest : new StandardCategory(category.getName());
         val optional = standardCategoryRepository.findStandardCategoryByName(standard.getName());
         if (optional.isEmpty()) {
             standard = standardCategoryRepository.save(standard);
@@ -89,6 +91,6 @@ public class CategorizationService {
     }
 
     private boolean isCategoryNotPersisted(com.mobilemall.scrapper.model.Category category) {
-        return categoryRepository.findCategoryByOriginalNameAndUrl(category.getName(), category.getUrl()).isEmpty();
+        return categoryRepository.findCategoryByNameAndUrl(category.getName(), category.getUrl()).isEmpty();
     }
 }
