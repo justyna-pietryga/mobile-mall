@@ -13,7 +13,10 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class BershkaScraper extends Scraper implements Scrapable {
@@ -34,6 +37,11 @@ public class BershkaScraper extends Scraper implements Scrapable {
     }
 
     @Override
+    public String addSizeToUrl(List<String> sizes) {
+        return sizes == null || sizes.isEmpty() ? "" : "?size=" + String.join("%7C%7C", sizes);
+    }
+
+    @Override
     public Flux<Category> getScrappedCategories() {
         return SeleniumManager.scrapData(this::scrapCategories, url + "/pl/");
     }
@@ -50,8 +58,8 @@ public class BershkaScraper extends Scraper implements Scrapable {
     }
 
     @Override
-    public Flux<Product> getProducts(String url) {
-        return SeleniumManager.scrapData(this::scrapProducts, url);
+    public Flux<Product> getProducts(String url, List<String> sizes) {
+        return SeleniumManager.scrapData(this::scrapProducts, url + addSizeToUrl(sizes));
     }
 
 
@@ -103,11 +111,14 @@ public class BershkaScraper extends Scraper implements Scrapable {
                     }
                 }
 
+                String priceData = priceElement.getText();
+                String price = priceData.replace("PLN", "").replace(",", ".");
+
                 return Product.builder()
                         .url(productAHref.getAttribute("href"))
                         .name(pElement.getText())
                         .imgUrl(imgElement.isPresent() ? imgElement.get().getAttribute("data-original") : "")
-                        .price(priceElement.getText())
+                        .price(Double.parseDouble(price))
                         .build();
             }
         }

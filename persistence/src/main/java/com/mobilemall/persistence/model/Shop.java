@@ -4,10 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.util.List;
 
 @Entity
@@ -26,4 +23,7 @@ public class Shop {
     @OneToMany(mappedBy = "shop")
     @Transient
     private List<Category> categories;
+
+    @OneToMany(mappedBy = "shop")
+    private List<Product> product;
 }

@@ -19,6 +19,8 @@ import reactor.core.publisher.ParallelFlux;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static java.util.stream.Collectors.toList;
 
@@ -44,6 +46,11 @@ public class ReservedScraper extends Scraper implements Scrapable {
         return ShopsEnum.RESERVED;
     }
 
+    @Override
+    public String addSizeToUrl(List<String> sizes) {
+        return sizes == null || sizes.isEmpty() ? "" : "/s/" + String.join("-", sizes);
+    }
+
     private Flux<Category> scrapCategories(WebDriver driver) {
         val elements = driver
                 .findElement(By.xpath(liElementXpath))
@@ -54,10 +61,10 @@ public class ReservedScraper extends Scraper implements Scrapable {
     }
 
     @Override
-    public Flux<Product> getProducts(String url) {
+    public Flux<Product> getProducts(String url, List<String> sizes) {
         Document document = null;
         try {
-            document = Jsoup.connect(url).get();
+            document = Jsoup.connect(url + addSizeToUrl(sizes)).get();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -81,12 +88,14 @@ public class ReservedScraper extends Scraper implements Scrapable {
         Element productAHrefElement = figureElement.select("figcaption a").first();
         Element priceElement = figureElement.select("section p span").first();
         String imgUrl = figureElement.select("a img").first().attr("data-src");
+        String priceData = priceElement.text();
+        String price = priceData.replace("PLN", "").replace(",", ".");
 
         return Product.builder()
                 .name(productAHrefElement.text())
                 .url(productAHrefElement.attr("href"))
                 .imgUrl(imgUrl)
-                .price(priceElement.text())
+                .price(Double.parseDouble(price))
                 .build();
     }
 }

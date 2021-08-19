@@ -22,7 +22,7 @@ public class SeleniumManager {
 
     private static void webDriverDelayAtStart(WebDriver driver) {
         try {
-            driver.wait(10 * 1000);
+            driver.wait(5 * 1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -30,12 +30,6 @@ public class SeleniumManager {
 
     public static WebDriver createWebDriver() {
         System.setProperty("webdriver.chrome.driver", "scrapper/src/main/resources/chromedriver.exe");
-//        Proxy proxy = new Proxy();
-//        proxy.setAutodetect(false);
-//        proxy.setHttpProxy("http_proxy-url:port");
-//        proxy.setSslProxy("https_proxy-url:port");
-//        proxy.setNoProxy("no_proxy-var");
-
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--diable--notifications");
 //        options.addArguments("--headless");
@@ -44,8 +38,6 @@ public class SeleniumManager {
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
         options.addArguments("--window-size=1580,1280");
-
-//        options.setCapability("proxy", proxy);
 
         WebDriver driver = new ChromeDriver(options);
 //        driver.manage().window().maximize();
