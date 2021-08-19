@@ -18,6 +18,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/api/products")
+@CrossOrigin(origins = "*")
 @Slf4j
 public class ProductsController {
     private final CategorizationService categorizationService;
@@ -34,8 +35,10 @@ public class ProductsController {
 
     @GetMapping(path = "/byStandardCategoryIds", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public Flux<Product> getAllProductsByStandardCategoryIds(@RequestParam List<Long> standardCategoryIds) {
-        val categories = categorizationService.findCategoriesByStandardCategoryIds(standardCategoryIds);
+    public Flux<Product> getAllProductsByStandardCategoryIds(@RequestParam List<Long> standardCategoryIds,
+                                                             @RequestParam(required = false) List<String> size) {
+        val categories = categorizationService
+                .findCategoriesByStandardCategoryIds(standardCategoryIds);
         System.out.println("Requested products by categories: " + categories);
         log.info("Requested products by categories: {}", categories);
         return Flux.fromIterable(categories)
@@ -44,7 +47,7 @@ public class ProductsController {
                             log.info("Shop: {}", category.getShop().getShop_id());
                             log.info("Category Url: {}", category.getUrl());
                             return scrapperHandler.get(ShopsEnum.valueOf(category.getShop().getShop_id()))
-                                    .getProducts(category.getUrl())
+                                    .getProducts(category.getUrl(), size)
                                     .publishOn(Schedulers.boundedElastic())
                                     .doOnNext(product -> log.info("Product: {}", product));
                         }

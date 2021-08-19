@@ -9,5 +9,5 @@ public class Product {
     String url;
     String name;
     String imgUrl;
-    String price;
+    double price;
 }

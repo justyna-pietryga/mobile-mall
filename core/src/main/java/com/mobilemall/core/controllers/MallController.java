@@ -55,10 +55,10 @@ public class MallController {
 
     @GetMapping(path = "/prod", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public Flux<Product> getProducts() {
+    public Flux<Product> getProducts(@RequestParam(required = false) List<String> size) {
         return scrapperHandler
                 .get(ShopsEnum.RESERVED)
-                .getProducts("https://www.reserved.com/pl/pl/woman/clothes/blouses");
+                .getProducts("https://www.reserved.com/pl/pl/woman/clothes/blouses", size);
 //                        .url("https://www.bershka.com/pl/kobieta/odzie%C5%BC/bluzy-c1010193222.html")
     }
 
